@@ -1,6 +1,9 @@
 #macos
 .DS_Store
 
+# ignore updates to activities
+data/activities.csv
+
 # fliter dataset not shared
 BBC/
 

@@ -1,0 +1,20 @@
+content_id,activity,attribute_link,attribute_value,user_id,datetime
+,login,,,5,2022-03-27 13:19:39.959887
+,logout,,,5,2022-03-27 13:19:58.729109
+,login,,,5,2022-03-27 13:20:12.072189
+23,select content,Genre,arts,5,2022-03-27 13:20:14.262852
+23,unload content,,,5,2022-03-27 13:20:20.101687
+2453,select content,Similar to,23,5,2022-03-27 13:20:20.102712
+2453,unload content,,,5,2022-03-27 13:20:28.131312
+2500,select content,Same genre,signed,5,2022-03-27 13:20:28.132261
+2500,unload content,,,5,2022-03-27 13:20:36.438493
+119,select content,Genre,arts,5,2022-03-27 13:20:42.244278
+119,content_rating,,1.6,5,2022-03-27 13:21:26.124535
+119,unload content,,,5,2022-03-27 13:21:30.685173
+1369,select content,Similar to,119,5,2022-03-27 13:21:30.685528
+1369,content_rating,,4.2,5,2022-03-27 13:21:35.466552
+1369,unload content,,,5,2022-03-27 13:21:37.587310
+167,select content,Genre,cbbc,5,2022-03-27 13:21:39.987049
+167,content_rating,,0.7,5,2022-03-27 13:21:45.230842
+167,unload content,,,5,2022-03-27 13:22:43.686364
+,logout,,,5,2022-03-27 13:22:43.687015

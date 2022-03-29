@@ -1,0 +1,6 @@
+name,id,password,age,gender,content_types
+Sirik,1,ikbensirik,18-29,Male,"['comedy', 'entertainment']"
+Wannes,2,ikbenwannes,18-29,Male,"['news', 'music']"
+Sjors,3,ikbensjors,18-29,Male,['documentaries']
+Joost,4,ikbenjoost,18-29,Male,"['drama-and-soaps', 'sports']"
+Jonas,5,ikbenjonas,18-29,Male,[]

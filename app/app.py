@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from random import random
+from ast import literal_eval
 
 import template as t
 import recommender as r
@@ -9,21 +10,33 @@ import recommender as r
 
 #set page layout and load in the dataset 
 st.set_page_config(layout='wide')
-df_users = pd.read_json('../data/users.json')
+df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval})
 
 # Login precedure
 # logout session state is used so that one is not logged in directly after logging out
 if 'logout' not in st.session_state:
   st.session_state['logout'] = False
 
+# account creation session is used so the form does not dissapear if the user gave wrong input in the form
+if 'account create' not in st.session_state:
+  st.session_state['account create'] = False
+
 if 'user' not in st.session_state:
   # create some room for login
   placeholder = st.empty()
   with placeholder.container():
     # collect user data
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
-    # check if both are entered
+    username = st.text_input('Username', key='username')
+    password = st.text_input('Password', type='password', key='password')
+    
+    # account creation 
+    button_press = st.button('Or create an account')
+    if button_press:
+      st.session_state['account create'] = True
+    if st.session_state['account create']:
+      t.create_account_form()
+
+    # check if both username and password are entered
     if not username or not password:
       st.stop()
     # does the username exist
@@ -35,7 +48,7 @@ if 'user' not in st.session_state:
       st.warning('Invalid password')
       st.stop()
     # login if all is correct and not just logged out
-    elif (not st.session_state['logout']) and (password == df_users[df_users['name'] == username].iloc[0]['password']):
+    elif ((not st.session_state['logout'])) and (password == df_users[df_users['name'] == username].iloc[0]['password']):
       t.login(df_users[df_users['name'] == username].iloc[0])
     # else they have must just logged out, so reset the logout parameter
     else:
@@ -80,7 +93,7 @@ with col2:
 
   # user rating
   with st.form('rating'):
-    slider_rating = st.slider('Rate this content', min_value=0.0, max_value=5.0, step=0.1, key='content_rating')
+    slider_rating = st.slider('Rate this content', min_value=0, max_value=5, step=1, key='content_rating')
     submit_button = st.form_submit_button("Submit rating", on_click=t.rating_callback, args=(st.session_state['index'], ))
 
 # on content page, make similar type of content recommendations

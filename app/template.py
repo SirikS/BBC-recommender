@@ -1,13 +1,15 @@
 import streamlit as st
 from random import random
-# from PIL import Image
-# import requests
 import datetime
 import csv
+import pandas as pd
+from ast import literal_eval
 
-def activity(activity, id=None, attribute_link=None, attribute_value=None):
+def activity(activity, id=None, attribute_link=None, attribute_value=None, user_id=None):
+  if not user_id:
+    user_id = st.session_state['user']['id']
   data = {'content_id': id, 'activity': activity, 'attribute_link':attribute_link, 'attribute_value': attribute_value, 
-  'user_id': int(st.session_state['user']['id']), 'datetime': str(datetime.datetime.now())}
+  'user_id': user_id, 'datetime': str(datetime.datetime.now())}
   
   # only turn of if csv file has to be made
   # with open('../data/activities.csv', 'w') as f:
@@ -72,4 +74,45 @@ def unload_content():
 def rating_callback(id):
   # store the rating
   activity(activity='content_rating', id=id, attribute_value=st.session_state.content_rating)
+
+def create_account_form():
+  with st.form('new account'):
+    username_input = st.text_input('Preferred username', key='new_username')
+    password_input = st.text_input('Password', type='password', key='new_password')
+    gender = st.selectbox('What is you gender?', ('Male', 'Female', 'Other'), key='new_gender')
+    age = st.selectbox('What is you age', ('0-9', '10-17', '18-29', '30-49', '50-64', '65+', 'Prefer not to say'), index=2,  key='new_age')
+    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_proccessed.csv').Genre.unique(), key='content_types')
+    submit_button = st.form_submit_button("Create account", on_click=create_account)
+
+def create_account():
+  users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval})
+  username = st.session_state.new_username
+  password = st.session_state.new_password
+  if not username:
+    st.error('Please fill in a username')
+  elif not password:
+    st.error('Please fill in a password')
+  elif username in users['name'].values:
+    st.error('Username already taken')
+  else:
+    gender = st.session_state.new_gender
+    age = st.session_state.new_age
+    content_types =str(st.session_state.content_types)
+
+    new_id = users.id.max() + 1
+
+    new_user = pd.DataFrame([{'name': username, 'id': new_id, 'password':password, 'age': age, 
+    'gender': gender, 'content_types': content_types}])
+    new_user['content_types'] = new_user['content_types'].apply(literal_eval)
+
+    users = pd.concat([users, new_user])
+
+    # store the new user
+    users.to_csv('../data/users.csv', index=False)
+
+    activity(activity='create_account', user_id=new_id)
+    st.session_state['account create'] = False
+    login(new_user.loc[0])
+
+  
   

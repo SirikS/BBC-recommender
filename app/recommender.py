@@ -4,10 +4,14 @@ import template as t
 import streamlit as st
 
 def main_recommendations(df):
-    # loop though some genres and recommend them
-    for genre in df.Genre.unique()[:2]:
-        st.subheader(genre)
+
+    # user interests
+    for genre in st.session_state['user']['content_types']:
+        st.subheader(f"Because you're interested in {genre.capitalize()}")
         t.recommendations(df[df['Genre'] == genre].sample(10), type='Genre', linked_to=genre)
+
+    st.subheader(f"Some of the top news shows")
+    t.recommendations(df[df['Genre'] == 'news'].sample(10), type='Top news')
 
 def content_recommendations(df, current_content):
     # similar show descriptions

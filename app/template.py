@@ -6,6 +6,9 @@ import pandas as pd
 from ast import literal_eval
 
 def activity(activity, id=None, attribute_link=None, attribute_value=None, user_id=None):
+  if st.session_state.incognito and id != None:
+    return
+  
   if not user_id:
     user_id = st.session_state['user']['id']
   data = {'content_id': id, 'activity': activity, 'attribute_link':attribute_link, 'attribute_value': attribute_value, 
@@ -49,6 +52,8 @@ def logout():
   # unload content if loaded
   if 'index' in st.session_state:
     unload_content()
+  if st.session_state['open profile']:
+    st.session_state['open profile'] = False
   
   # store activity
   activity(activity='logout')
@@ -85,7 +90,7 @@ def create_account_form():
     submit_button = st.form_submit_button("Create account", on_click=create_account)
 
 def create_account():
-  users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval})
+  users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
   username = st.session_state.new_username
   password = st.session_state.new_password
   if not username:
@@ -123,3 +128,65 @@ def search():
   # stop so the normal recommendations are not loaded. 
   st.stop()
   
+def open_profile():
+  st.session_state['open profile'] = True
+  activity(activity='open profile')
+
+def close_profile():
+  st.session_state['open profile'] = False
+  activity(activity='close profile')
+
+def profile():
+  col1, col2, col3, col4 = st.columns([1, 3, 3, 1])
+  with col1:
+    st.button('Go back', on_click=close_profile)
+  with col4:
+    st.button("Logout", key=random(), on_click=logout)
+  genders = ['Male', 'Female', 'Other']
+  agegroups = ['0-9', '10-17', '18-29', '30-49', '50-64', '65+', 'Prefer not to say']
+  with st.form('new account'):
+    username_input = st.text_input('Preferred username', key='new_username', disabled=True, value=st.session_state['user']['name'])
+    password_input = st.text_input('Password', type='password', key='new_password', value=st.session_state['user']['password'])
+    gender = st.selectbox('What is you gender?', genders, key='new_gender', index=genders.index(st.session_state['user']['gender']))
+    age = st.selectbox('What is you age', agegroups, key='new_age', index=agegroups.index(st.session_state['user']['age']))
+    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_proccessed.csv').Genre.unique(), key='content_types', default=st.session_state['user']['content_types'])
+    submit_button = st.form_submit_button("Change account", on_click=update_account)
+
+  # download and delete personal data
+  st.download_button(
+    label="Download all personal data",
+    data=chached_df(),
+    file_name='personal_data.csv',
+    mime='text/csv')
+  st.button('Reset all content interactions', on_click=reset_interactions)
+
+  st.stop()
+
+def update_account():
+  # change session state
+  st.session_state['user']['password'] = st.session_state.new_password
+  st.session_state['user']['gender'] = st.session_state.new_gender
+  st.session_state['user']['age'] = st.session_state.new_age
+  st.session_state['user']['content_types'] = st.session_state.content_types
+  
+  # update user dataset
+  users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+  users = users[users['id'] != st.session_state['user']['id']]
+  users = pd.concat([users, st.session_state['user'].to_frame().T])
+  users.to_csv('../data/users.csv', index=False)
+
+  activity(activity='update_account')
+
+def chached_df():
+  df = pd.read_csv('../data/activities.csv')
+  df = df[df['user_id'] == st.session_state['user']['id']]
+  return df.to_csv(index=False).encode('utf-8')
+
+def reset_interactions():
+  # delete all content interactions
+  df = pd.read_csv('../data/activities.csv')
+  df = df[~((df['user_id'] == st.session_state['user']['id']) & (~df['content_id'].isna()))]
+  
+  # store data and activity
+  df.to_csv('../data/activities.csv', index=False)
+  activity(activity='reset_interactions')

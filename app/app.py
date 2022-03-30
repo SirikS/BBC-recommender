@@ -1,3 +1,4 @@
+from turtle import onclick
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,7 +11,13 @@ import recommender as r
 
 #set page layout and load in the dataset 
 st.set_page_config(layout='wide')
-df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval})
+df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+
+if 'incognito' not in st.session_state:
+  st.session_state['incognito'] = False
+
+if 'open profile' not in st.session_state:
+  st.session_state['open profile'] = False
 
 # Login precedure
 # logout session state is used so that one is not logged in directly after logging out
@@ -58,28 +65,36 @@ if 'user' not in st.session_state:
   placeholder.empty()
   st.success(f"Welcome {st.session_state['user']['name']}, have a look around!")
 
+if st.session_state['open profile']:
+  t.profile()
 
 # if logged in: load all content
 df_bbc = pd.read_csv('../data/BBC_proccessed.csv')
+
+# with st.sidebar:
+#   st.write(f"Hello, {st.session_state['user']['name']}")
+#   st.button('View profile', on_click=t.open_profile)
 
 # menu bar
 col1, col2, col3, col4 = st.columns([2, 2, 3, 1])
 if 'index' in st.session_state:
   with col1:
-    st.text('')
-    st.text('')
+    st.title('')
     st.button("Back to recommender", key=random(), on_click=t.unload_content)
 else:
   # could use this room for search bar/other buttons
   pass
+with col2:
+  st.title('')
+  st.checkbox('Incognito session', key='incognito')
 with col3:
   search = st.text_input('Seach for an item', placeholder='For example: Dance Passion', key='search', on_change=t.search)
 
 
 with col4:
-  st.text('')
-  st.text('')
-  st.button("Logout", key=random(), on_click=t.logout)
+  st.title('')
+  st.button('View profile', on_click=t.open_profile)
+  # st.button("Logout", key=random(), on_click=t.logout)
 
 # if not looking at content, load front page recommendations
 if 'index' not in st.session_state:

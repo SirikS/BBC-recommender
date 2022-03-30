@@ -30,40 +30,43 @@ if 'account create' not in st.session_state:
 
 if 'user' not in st.session_state:
   # create some room for login
-  placeholder = st.empty()
-  with placeholder.container():
-    # collect user data
-    username = st.text_input('Username', key='username')
-    password = st.text_input('Password', type='password', key='password')
-    
-    # account creation 
-    button_press = st.button('Or create an account')
-    if button_press:
-      st.session_state['account create'] = True
-    if st.session_state['account create']:
-      t.create_account_form()
+  t.login_page()
 
-    # check if both username and password are entered
-    if not username or not password:
-      st.stop()
-    # does the username exist
-    elif username not in df_users['name'].unique():
-      st.warning('Invalid username')
-      st.stop()
-    # validate password
-    elif password != df_users[df_users['name'] == username].iloc[0]['password']:
-      st.warning('Invalid password')
-      st.stop()
-    # login if all is correct and not just logged out
-    elif ((not st.session_state['logout'])) and (password == df_users[df_users['name'] == username].iloc[0]['password']):
-      t.login(df_users[df_users['name'] == username].iloc[0])
-    # else they have must just logged out, so reset the logout parameter
-    else:
-      st.session_state['logout'] = False
-      st.success('Logout succesfull')
-      st.stop()
-  placeholder.empty()
-  st.success(f"Welcome {st.session_state['user']['name']}, have a look around!")
+  # placeholder = st.empty()
+  # with placeholder.container():
+  #   # collect user data
+  #   st.title('Welcome to the BBC recommender system, please login')
+  #   username = st.text_input('Username', key='username')
+  #   password = st.text_input('Password', type='password', key='password')
+    
+  #   # account creation 
+  #   button_press = st.button('Or create an account')
+  #   if button_press:
+  #     st.session_state['account create'] = True
+  #   if st.session_state['account create']:
+  #     t.create_account_form()
+
+  #   # check if both username and password are entered
+  #   if not username or not password:
+  #     st.stop()
+  #   # does the username exist
+  #   elif username not in df_users['name'].unique():
+  #     st.warning('Invalid username')
+  #     st.stop()
+  #   # validate password
+  #   elif password != df_users[df_users['name'] == username].iloc[0]['password']:
+  #     st.warning('Invalid password')
+  #     st.stop()
+  #   # login if all is correct and not just logged out
+  #   elif ((not st.session_state['logout'])) and (password == df_users[df_users['name'] == username].iloc[0]['password']):
+  #     t.login(df_users[df_users['name'] == username].iloc[0])
+  #   # else they have must just logged out, so reset the logout parameter
+  #   else:
+  #     st.session_state['logout'] = False
+  #     st.success('Logout succesfull')
+  #     st.stop()
+  # placeholder.empty()
+  # st.success(f"Welcome {st.session_state['user']['name']}, have a look around!")
 
 if st.session_state['open profile']:
   t.profile()

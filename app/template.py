@@ -80,6 +80,43 @@ def rating_callback(id):
   # store the rating
   activity(activity='content_rating', id=id, attribute_value=st.session_state.content_rating)
 
+def check_login():
+  df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+  username = st.session_state.username
+  password = st.session_state.password
+
+  if not username or not password:
+    st.warning('Please fill in both a username and password')
+
+  # does the username exist
+  elif username not in df_users['name'].unique():
+    st.warning('Invalid username')
+
+  # validate password
+  elif password != df_users[df_users['name'] == username].iloc[0]['password']:
+    st.warning('Invalid password')
+
+  elif password == df_users[df_users['name'] == username].iloc[0]['password']:
+    login(df_users[df_users['name'] == username].iloc[0])
+    return
+
+  login_page()
+
+def login_page():
+  st.title('Welcome to the BBC recommender system, please login')
+  with st.form('login'):
+    username = st.text_input('Username', key='username')
+    password = st.text_input('Password', type='password', key='password')
+    submit_button = st.form_submit_button("Login", on_click=check_login)
+
+  button_press = st.button('No account? Create a new one!')
+  if button_press:
+    st.session_state['account create'] = True
+  if st.session_state['account create']:
+    create_account_form()
+
+  st.stop()
+    
 def create_account_form():
   with st.form('new account'):
     username_input = st.text_input('Preferred username', key='new_username')
@@ -115,7 +152,7 @@ def create_account():
     # store the new user
     users.to_csv('../data/users.csv', index=False)
 
-    activity(activity='create_account', user_id=new_id)
+    activity(activity='create account', user_id=new_id)
     st.session_state['account create'] = False
     login(new_user.loc[0])
 
@@ -159,7 +196,7 @@ def profile():
     file_name='personal_data.csv',
     mime='text/csv')
   st.button('Reset all content interactions', on_click=reset_interactions)
-
+  st.button('Delete my account', on_click=delete_account)
   st.stop()
 
 def update_account():
@@ -175,7 +212,7 @@ def update_account():
   users = pd.concat([users, st.session_state['user'].to_frame().T])
   users.to_csv('../data/users.csv', index=False)
 
-  activity(activity='update_account')
+  activity(activity='update account')
 
 def chached_df():
   df = pd.read_csv('../data/activities.csv')
@@ -189,4 +226,15 @@ def reset_interactions():
   
   # store data and activity
   df.to_csv('../data/activities.csv', index=False)
-  activity(activity='reset_interactions')
+  activity(activity='reset interactions')
+
+def delete_account():
+  user_id = st.session_state['user']['id']
+  # log out
+  logout()
+
+  # delete account
+  activity(activity='delete account', user_id=user_id)
+  users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+  users = users[users['id'] != user_id]
+  users.to_csv('../data/users.csv', index=False)

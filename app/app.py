@@ -66,12 +66,19 @@ df_bbc = pd.read_csv('../data/BBC_proccessed.csv')
 col1, col2, col3, col4 = st.columns([2, 2, 3, 1])
 if 'index' in st.session_state:
   with col1:
+    st.text('')
+    st.text('')
     st.button("Back to recommender", key=random(), on_click=t.unload_content)
 else:
   # could use this room for search bar/other buttons
   pass
+with col3:
+  search = st.text_input('Seach for an item', placeholder='For example: Dance Passion', key='search', on_change=t.search)
+
 
 with col4:
+  st.text('')
+  st.text('')
   st.button("Logout", key=random(), on_click=t.logout)
 
 # if not looking at content, load front page recommendations

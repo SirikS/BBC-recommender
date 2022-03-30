@@ -115,4 +115,11 @@ def create_account():
     login(new_user.loc[0])
 
   
+def search():
+  query = st.session_state.search
+
+  # search for matches here and recommend them before the stop
+
+  # stop so the normal recommendations are not loaded. 
+  st.stop()
   

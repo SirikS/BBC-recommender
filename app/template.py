@@ -52,15 +52,16 @@ def logout():
   # unload content if loaded
   if 'index' in st.session_state:
     unload_content()
-  if st.session_state['open profile']:
-    st.session_state['open profile'] = False
+  
+  # make sure these are back to false
+  st.session_state['open profile'] = False
+  st.session_state['account create'] = False
   
   # store activity
   activity(activity='logout')
 
   # logout
   del st.session_state['user']
-  st.session_state['logout'] = True
 
 def select_content(show_id, type, linked_to):  
   # unload content if loaded

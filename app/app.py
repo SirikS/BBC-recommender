@@ -12,6 +12,8 @@ import recommender as r
 st.set_page_config(layout='wide')
 df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
 
+
+
 ### setup some session state values
 if 'incognito' not in st.session_state:
   st.session_state['incognito'] = False
@@ -42,11 +44,14 @@ else:
   # could use this room for other button
   pass
 
+
+
+
 with col2:
   st.title('')
   st.checkbox('Incognito session', key='incognito')
 with col3:
-  search = st.text_input('Seach for an item', placeholder='For example: Dance Passion', key='search', on_change=t.search)
+  searchbar = st.text_input('Search for an item', placeholder='For example: Dance Passion', key='search', on_change=t.search)
 with col4:
   st.title('')
   st.button('View profile', on_click=t.open_profile)
@@ -58,6 +63,9 @@ df_bbc = pd.read_csv('../data/BBC_proccessed.csv')
 if 'index' not in st.session_state:
   r.main_recommendations(df_bbc)
   st.stop()
+
+
+
 
 ## content page
 df_current_content = df_bbc[df_bbc['ID'] ==  st.session_state['index']].iloc[0]

@@ -161,7 +161,42 @@ def create_account():
 def search():
   query = st.session_state.search
 
-  # search for matches here and recommend them before the stop
+  activity(activity='search', attribute_value = query)
+  #usually when searching people will use lowercase, but to be sure I converted all strings to lowercase
+  query = query.lower()
+  df = pd.read_csv('../data/BBC_proccessed.csv')
+
+  ## search for matches here, convert title and description to lowercase to void weird upper/lowercase dependent
+  ##search results
+  df['title_low'] = df['Title'].str.lower() + ' '
+  df_title_search = df[df['title_low'].str.contains(query)]
+  if len(df_title_search) > 8:
+    df_title_search = df_title_search.sample(8)
+
+  df['description_low'] = df['Description'].str.lower()
+  df_description_search = df[df['description_low'].str.contains(query)]
+  if len(df_description_search) > 8:
+    df_description_search = df_description_search.sample(8)
+
+  ##create a back button, then show the search results
+  st.button("Back to recommender", key=random(), on_click=unload_content)
+
+  ##show the search results
+  st.header('Because you searched for \'' + query + '\'')
+
+  # Search results based on title
+  st.subheader('Shows or movies that have \'' + query + '\' in their title')
+  if len(df_title_search) > 0:
+    recommendations(df_title_search, type='Search')
+  else:
+    st.text('No shows or movies that have \'' + query + '\' in their title were found ')
+
+  # Search results based on description
+  st.subheader('Shows or movies that contain \'' + query + '\' in their description')
+  if len(df_description_search) > 0:
+    recommendations(df_description_search, type='Search')
+  else:
+    st.text('No shows or movies that contain \'' + query + '\' in their description were found')
 
   # stop so the normal recommendations are not loaded. 
   st.stop()

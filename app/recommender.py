@@ -25,3 +25,38 @@ def content_recommendations(df, current_content):
     df_recom_cat = df[df['Genre'] == current_content['Genre']]
     df_recom_cat = df_recom_cat.sample(n=8, random_state = current_content['ID'], replace=False)
     t.recommendations(df_recom_cat, type='Same genre', linked_to=current_content['Genre'])
+
+def load_search():
+    # usually when searching people will use lowercase, but to be sure I converted all strings to lowercase
+    query = st.session_state['search query']
+    df = pd.read_csv('../data/BBC_proccessed.csv')
+
+    ## search for matches here, convert title and description to lowercase to void weird upper/lowercase dependent
+    ##search results
+    df['title_low'] = df['Title'].str.lower() + ' '
+    df_title_search = df[df['title_low'].str.contains(query.lower())]
+    df_title_search = df_title_search.sample(min(len(df_title_search), 8))
+
+    df['description_low'] = df['Description'].str.lower()
+    df_description_search = df[df['description_low'].str.contains(query.lower())]
+    df_description_search = df_description_search.sample(min(len(df_description_search),8))
+
+    ##show the search results
+    st.header('Because you searched for \'' + query + '\'')
+
+    # Search results based on title
+    st.subheader('Shows or movies that have \'' + query + '\' in their title')
+    if len(df_title_search) > 0:
+        t.recommendations(df_title_search, type='Search')
+    else:
+        st.text('No shows or movies that have \'' + query + '\' in their title were found ')
+
+    # Search results based on description
+    st.subheader('Shows or movies that contain \'' + query + '\' in their description')
+    if len(df_description_search) > 0:
+        t.recommendations(df_description_search, type='Search')
+    else:
+        st.text('No shows or movies that contain \'' + query + '\' in their description were found')
+
+    # stop so the normal recommendations are not loaded. 
+    st.stop()

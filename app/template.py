@@ -56,6 +56,7 @@ def logout():
   # make sure these are back to false
   st.session_state['open profile'] = False
   st.session_state['account create'] = False
+  st.session_state['search'] = False
   
   # store activity
   activity(activity='logout')
@@ -74,8 +75,9 @@ def select_content(show_id, type, linked_to):
 
 def unload_content():
   # log unloading, and reset index
-  activity(activity='unload content', id=st.session_state['index'])
-  del st.session_state['index']
+  if 'index' in st.session_state:
+    activity(activity='unload content', id=st.session_state['index'])
+    del st.session_state['index']
 
 def rating_callback(id):
   # store the rating
@@ -157,49 +159,20 @@ def create_account():
     st.session_state['account create'] = False
     login(new_user.loc[0])
 
-  
-def search():
-  query = st.session_state.search
+def set_search():
+  # make sure query is not empty
+  if st.session_state.search == '':
+    st.session_state['load search'] = False
+    return
 
-  activity(activity='search', attribute_value = query)
-  #usually when searching people will use lowercase, but to be sure I converted all strings to lowercase
-  query = query.lower()
-  df = pd.read_csv('../data/BBC_proccessed.csv')
+  # set parameters
+  st.session_state['load search'] = True
+  st.session_state['search query'] = st.session_state.search
+  activity(activity='search', attribute_value = st.session_state.search)
+  # search is automatically loaded from app.py after this code
 
-  ## search for matches here, convert title and description to lowercase to void weird upper/lowercase dependent
-  ##search results
-  df['title_low'] = df['Title'].str.lower() + ' '
-  df_title_search = df[df['title_low'].str.contains(query)]
-  if len(df_title_search) > 8:
-    df_title_search = df_title_search.sample(8)
-
-  df['description_low'] = df['Description'].str.lower()
-  df_description_search = df[df['description_low'].str.contains(query)]
-  if len(df_description_search) > 8:
-    df_description_search = df_description_search.sample(8)
-
-  ##create a back button, then show the search results
-  st.button("Back to recommender", key=random(), on_click=unload_content)
-
-  ##show the search results
-  st.header('Because you searched for \'' + query + '\'')
-
-  # Search results based on title
-  st.subheader('Shows or movies that have \'' + query + '\' in their title')
-  if len(df_title_search) > 0:
-    recommendations(df_title_search, type='Search')
-  else:
-    st.text('No shows or movies that have \'' + query + '\' in their title were found ')
-
-  # Search results based on description
-  st.subheader('Shows or movies that contain \'' + query + '\' in their description')
-  if len(df_description_search) > 0:
-    recommendations(df_description_search, type='Search')
-  else:
-    st.text('No shows or movies that contain \'' + query + '\' in their description were found')
-
-  # stop so the normal recommendations are not loaded. 
-  st.stop()
+def stop_search():
+  st.session_state['load search'] = False
   
 def open_profile():
   st.session_state['open profile'] = True

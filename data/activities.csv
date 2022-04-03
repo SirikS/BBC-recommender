@@ -56,123 +56,15 @@ content_id,activity,attribute_link,attribute_value,user_id,datetime
 ,reset interactions,,,6,2022-04-03 12:42:45.491219
 ,reset interactions,,,6,2022-04-03 12:42:47.280303
 ,reset interactions,,,6,2022-04-03 12:42:47.578309
-,reset interactions,,,6,2022-04-03 12:42:47.864318
-2189,unload content,,,6,2022-04-03 12:42:53.031715
-,logout,,,6,2022-04-03 12:42:53.032719
-,delete account,,,6,2022-04-03 12:42:53.033728
-,create account,,,6,2022-04-03 12:43:06.978890
-,login,,,6,2022-04-03 12:43:06.979890
-,login,,,6,2022-04-03 12:59:44.234495
-2278,select content,Top news,,6,2022-04-03 13:21:12.406958
-,login,,,6,2022-04-03 13:26:32.388524
-,login,,,6,2022-04-03 13:29:03.412429
-,login,,,6,2022-04-03 13:35:24.216857
-,login,,,6,2022-04-03 13:36:35.776211
-,login,,,6,2022-04-03 13:38:57.804362
-389,select content,Search,,6,2022-04-03 13:42:20.778007
-389,unload content,,,6,2022-04-03 13:42:30.477591
-389,select content,Search,,6,2022-04-03 13:42:30.478585
-389,unload content,,,6,2022-04-03 13:42:39.603750
-389,select content,Search,,6,2022-04-03 13:42:39.604760
-389,unload content,,,6,2022-04-03 13:42:47.838874
-2738,select content,Search,,6,2022-04-03 13:42:47.839874
-2738,unload content,,,6,2022-04-03 13:47:40.350475
-541,select content,Search,,6,2022-04-03 13:47:40.351473
-541,unload content,,,6,2022-04-03 13:47:57.387518
-1886,select content,Search,,6,2022-04-03 13:47:57.388523
-1886,unload content,,,6,2022-04-03 13:48:02.725023
-494,select content,Search,,6,2022-04-03 13:48:02.726024
-494,unload content,,,6,2022-04-03 13:48:47.740083
-2114,select content,Search,,6,2022-04-03 13:48:47.741080
-2114,unload content,,,6,2022-04-03 13:49:03.522417
-1450,select content,Search,,6,2022-04-03 13:49:03.523416
-1450,unload content,,,6,2022-04-03 13:49:11.819330
-1450,select content,Search,,6,2022-04-03 13:49:11.820328
-,login,,,6,2022-04-03 13:49:56.733351
-2194,select content,Top news,,6,2022-04-03 13:50:02.326394
-2194,unload content,,,6,2022-04-03 13:51:27.517678
-541,select content,Search,,6,2022-04-03 13:51:27.518679
-541,unload content,,,6,2022-04-03 13:54:59.866749
-2179,select content,Top news,,6,2022-04-03 13:56:04.300465
-2179,unload content,,,6,2022-04-03 13:57:47.760837
-597,select content,Similar to,2179,6,2022-04-03 13:57:47.761828
-597,unload content,,,6,2022-04-03 13:59:30.114923
-877,select content,Similar to,597,6,2022-04-03 13:59:30.115927
-877,unload content,,,6,2022-04-03 14:04:23.047027
-2217,select content,Top news,,6,2022-04-03 14:04:24.237393
-2217,unload content,,,6,2022-04-03 14:04:37.505002
-2173,select content,Top news,,6,2022-04-03 14:04:52.351949
-2173,unload content,,,6,2022-04-03 14:05:01.420291
-541,select content,Search,,6,2022-04-03 14:05:01.421301
-541,unload content,,,6,2022-04-03 14:05:12.257815
-831,select content,Similar to,541,6,2022-04-03 14:05:12.257815
-831,unload content,,,6,2022-04-03 14:11:39.926800
-541,select content,Search,,6,2022-04-03 14:11:51.749496
-541,unload content,,,6,2022-04-03 14:12:09.446313
-541,select content,Search,,6,2022-04-03 14:12:09.447322
-541,unload content,,,6,2022-04-03 14:13:14.886760
-2524,select content,Similar to,541,6,2022-04-03 14:13:14.888765
-2524,unload content,,,6,2022-04-03 14:14:08.712362
-1404,select content,Search,,6,2022-04-03 14:15:22.403291
-1404,unload content,,,6,2022-04-03 14:15:26.305699
-2232,select content,Top news,,6,2022-04-03 14:15:55.330978
-2232,unload content,,,6,2022-04-03 14:15:58.751043
-2423,select content,Similar to,2232,6,2022-04-03 14:15:58.752051
-2423,unload content,,,6,2022-04-03 14:16:05.453459
-,login,,,6,2022-04-03 14:16:31.282581
-541,select content,Search,,6,2022-04-03 14:16:36.378915
-541,unload content,,,6,2022-04-03 14:16:38.014737
-2206,select content,Top news,,6,2022-04-03 14:17:30.664835
-2206,unload content,,,6,2022-04-03 14:17:35.810516
-2223,select content,Top news,,6,2022-04-03 14:17:37.469511
-2223,unload content,,,6,2022-04-03 14:17:45.878478
-2172,select content,Top news,,6,2022-04-03 14:17:47.128253
-2172,unload content,,,6,2022-04-03 14:17:51.061590
-2182,select content,Top news,,6,2022-04-03 14:18:47.059478
-2182,unload content,,,6,2022-04-03 14:18:49.661235
-2268,select content,Top news,,6,2022-04-03 14:20:08.296250
-2268,unload content,,,6,2022-04-03 14:20:16.236011
-2263,select content,Search,,6,2022-04-03 14:20:16.237022
-2263,unload content,,,6,2022-04-03 14:22:35.510178
-389,select content,Search,,6,2022-04-03 14:22:35.511181
-389,unload content,,,6,2022-04-03 14:22:50.132424
-,login,,,6,2022-04-03 14:23:05.192667
-541,select content,Search,,6,2022-04-03 14:23:09.981209
-541,unload content,,,6,2022-04-03 14:23:15.609527
-2236,select content,Top news,,6,2022-04-03 14:23:17.040403
-2236,unload content,,,6,2022-04-03 14:23:18.003320
-,login,,,6,2022-04-03 14:27:27.922054
-2217,select content,Top news,,6,2022-04-03 14:27:36.477844
-2217,unload content,,,6,2022-04-03 14:27:37.434307
-541,select content,Search,,6,2022-04-03 14:29:35.398340
-541,unload content,,,6,2022-04-03 14:29:41.353696
-1338,select content,Search,,6,2022-04-03 14:29:41.354701
-1338,unload content,,,6,2022-04-03 14:29:43.088421
-2281,select content,Top news,,6,2022-04-03 14:29:46.274032
-2281,unload content,,,6,2022-04-03 14:29:49.865202
-541,select content,Search,,6,2022-04-03 14:31:02.019944
-541,unload content,,,6,2022-04-03 14:31:57.042969
-541,select content,Search,,6,2022-04-03 14:32:15.699618
-,search,,hello,6,2022-04-03 14:37:41.644129
-541,unload content,,,6,2022-04-03 14:41:20.145255
-389,select content,Search,,6,2022-04-03 14:41:20.146252
-389,unload content,,,6,2022-04-03 14:41:21.444508
-407,select content,Same genre,comedy,6,2022-04-03 14:41:21.445511
-407,unload content,,,6,2022-04-03 14:41:22.350735
-528,select content,Same genre,comedy,6,2022-04-03 14:41:22.351741
-528,unload content,,,6,2022-04-03 14:45:32.545869
-2012,select content,Similar to,528,6,2022-04-03 14:45:32.546870
-2012,unload content,,,6,2022-04-03 14:45:34.583036
-1731,select content,Similar to,2012,6,2022-04-03 14:45:34.584036
-1731,unload content,,,6,2022-04-03 14:45:35.860076
-1610,select content,Similar to,1731,6,2022-04-03 14:45:35.862054
-1610,unload content,,,6,2022-04-03 14:45:37.582447
-389,select content,Similar to,1610,6,2022-04-03 14:45:37.583454
-389,unload content,,,6,2022-04-03 14:49:01.679078
-414,select content,Similar to,389,6,2022-04-03 14:49:01.680089
-414,unload content,,,6,2022-04-03 14:49:02.600234
-824,select content,Similar to,414,6,2022-04-03 14:49:02.601238
-824,unload content,,,6,2022-04-03 14:49:03.254224
-190,select content,Similar to,824,6,2022-04-03 14:49:03.255218
-,open profile,,,6,2022-04-03 14:49:16.341326
-,close profile,,,6,2022-04-03 14:49:24.179469
+,reset interactions,,,6,2022-04-03 12:42:47.864318
+,open profile,,,1,2022-04-03 18:21:05.508174
+,close profile,,,1,2022-04-03 18:21:07.041766
+,open profile,,,1,2022-04-03 18:21:18.466352
+,logout,,,1,2022-04-03 18:21:19.375353
+,login,,,1,2022-04-03 18:22:14.374440
+468,select content,Genre,comedy,1,2022-04-03 18:22:16.683762
+468,content_rating,,2,1,2022-04-03 18:22:20.095744
+468,unload content,,,1,2022-04-03 18:22:21.900428
+416,select content,Genre,comedy,1,2022-04-03 18:22:23.262467
+416,content_rating,,3,1,2022-04-03 18:22:26.104056
+416,unload content,,,1,2022-04-03 18:22:28.043414

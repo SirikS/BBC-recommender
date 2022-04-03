@@ -13,13 +13,15 @@ st.set_page_config(layout='wide')
 df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
 
 
-
 ### setup some session state values
 if 'incognito' not in st.session_state:
   st.session_state['incognito'] = False
 
 if 'open profile' not in st.session_state:
   st.session_state['open profile'] = False
+
+if 'load search' not in st.session_state:
+  st.session_state['load search'] = False
 
 ### login procedure
 # account creation session is used so the form does not dissapear if the user gave wrong input in the form
@@ -36,22 +38,29 @@ if st.session_state['open profile']:
 
 ### menu bar
 col1, col2, col3, col4 = st.columns([2, 2, 3, 1])
-if 'index' in st.session_state:
+# on content after search
+if 'index' in st.session_state and st.session_state['load search']:
+  with col1:
+    st.title('')
+    st.button("Back to search", key=random(), on_click=t.unload_content)
+# on content from main recommender
+elif 'index' in st.session_state and not st.session_state['load search']:
   with col1:
     st.title('')
     st.button("Back to recommender", key=random(), on_click=t.unload_content)
+# on search
+elif (not 'index' in st.session_state) and st.session_state['load search']:
+  with col1:
+    st.title('')
+    st.button("Back to recommender", key=random(), on_click=t.stop_search)
 else:
-  # could use this room for other button
   pass
-
-
-
 
 with col2:
   st.title('')
   st.checkbox('Incognito session', key='incognito')
 with col3:
-  searchbar = st.text_input('Search for an item', placeholder='For example: Dance Passion', key='search', on_change=t.search)
+  searchbar = st.text_input('Search for an item', placeholder='For example: Dance Passion', key='search', on_change=t.set_search)
 with col4:
   st.title('')
   st.button('View profile', on_click=t.open_profile)
@@ -61,11 +70,10 @@ df_bbc = pd.read_csv('../data/BBC_proccessed.csv')
 
 ## front page recommendations
 if 'index' not in st.session_state:
+  if st.session_state['load search']:
+    r.load_search()
   r.main_recommendations(df_bbc)
   st.stop()
-
-
-
 
 ## content page
 df_current_content = df_bbc[df_bbc['ID'] ==  st.session_state['index']].iloc[0]

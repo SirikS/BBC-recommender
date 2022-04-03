@@ -68,3 +68,5 @@ content_id,activity,attribute_link,attribute_value,user_id,datetime
 416,select content,Genre,comedy,1,2022-04-03 18:22:23.262467
 416,content_rating,,3,1,2022-04-03 18:22:26.104056
 416,unload content,,,1,2022-04-03 18:22:28.043414
+,open profile,,,1,2022-04-03 18:48:58.881944
+,logout,,,1,2022-04-03 18:48:59.771555

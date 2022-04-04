@@ -71,7 +71,7 @@ df_episode = pd.read_csv('../data/BBC_episodes.csv')
 ## front page recommendations
 if 'index' not in st.session_state:
   if st.session_state['load search']:
-    r.load_search()
+    r.load_search(df_episode)
   r.main_recommendations(df_episode)
   st.stop()
 

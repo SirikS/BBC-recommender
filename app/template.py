@@ -56,8 +56,7 @@ def login(user):
 
 def logout():
   # unload content if loaded
-  if 'index' in st.session_state:
-    unload_content()
+  unload_content()
   
   # make sure these are back to false
   st.session_state['open profile'] = False
@@ -72,8 +71,7 @@ def logout():
 
 def select_content(show_id, type, linked_to):  
   # unload content if loaded
-  if 'index' in st.session_state:
-    unload_content()
+  unload_content()
 
   # load content and log
   st.session_state['index'] = show_id
@@ -170,6 +168,8 @@ def set_search():
   if st.session_state.search == '':
     st.session_state['load search'] = False
     return
+
+  unload_content()
 
   # set parameters
   st.session_state['load search'] = True

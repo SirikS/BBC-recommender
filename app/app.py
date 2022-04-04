@@ -66,17 +66,17 @@ with col4:
   st.button('View profile', on_click=t.open_profile)
 
 ### recommendations
-df_bbc = pd.read_csv('../data/BBC_proccessed.csv')
+df_episode = pd.read_csv('../data/BBC_episodes.csv')
 
 ## front page recommendations
 if 'index' not in st.session_state:
   if st.session_state['load search']:
     r.load_search()
-  r.main_recommendations(df_bbc)
+  r.main_recommendations(df_episode)
   st.stop()
 
 ## content page
-df_current_content = df_bbc[df_bbc['ID'] ==  st.session_state['index']].iloc[0]
+df_current_content = df_episode[df_episode['Content_ID'] ==  st.session_state['index']].iloc[0]
 
 # display content
 col1, col2 = st.columns(2)
@@ -84,6 +84,7 @@ with col1:
   st.image(df_current_content['Image'])                     
 with col2:
   st.title(df_current_content['Title'])
+  st.subheader(df_current_content['Season+Episode'])
   st.markdown(df_current_content['Description'])
   st.text('Genre:' + df_current_content['Genre'])
 
@@ -93,7 +94,7 @@ with col2:
     submit_button = st.form_submit_button("Submit rating", on_click=t.rating_callback, args=(st.session_state['index'], ))
 
 # on content page, make similar type of content recommendations
-r.content_recommendations(df_bbc, df_current_content)
+r.content_recommendations(df_episode, df_current_content)
 
 
 

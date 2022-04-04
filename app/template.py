@@ -22,26 +22,32 @@ def activity(activity, id=None, attribute_link=None, attribute_value=None, user_
   with open('../data/activities.csv', 'a') as f:
     csv.writer(f).writerow(data.values())
 
-def tile_item(column, item, type, linked_to):
+def tile_item(column, item, type, linked_to, button):
   with column:
     st.image(item['Image'], use_column_width='always')
-    st.button(item['Title'], key=random(), on_click=select_content, args=(item['ID'], type, linked_to))
+    if button == 'both':
+      st.button(item['Title'] + ' - ' + item['Season+Episode'], key=random(), on_click=select_content, args=(item['Content_ID'], type, linked_to))
+    else:
+      st.button(item[button], key=random(), on_click=select_content, args=(item['Content_ID'], type, linked_to))
 
-def recommendations(df, type='unknown', linked_to=None):
+
+def recommendations(df, type='unknown', linked_to=None, button='Title'):
 
   # check the number of items
   nbr_items = df.shape[0]
 
   if nbr_items != 0:    
 
+    
     # create columns with the corresponding number of items
-    columns = st.columns(nbr_items)
+    # columns = st.columns(nbr_items)
+    columns = st.columns(8)
 
     # convert df rows to dict lists
     items = df.to_dict(orient='records')
 
     # apply tile_item to each column-item tuple (created with python 'zip')
-    any(tile_item(x[0], x[1], type, linked_to) for x in zip(columns, items))
+    any(tile_item(x[0], x[1], type, linked_to, button) for x in zip(columns, items))
 
 def login(user):
   # loging and store activity
@@ -126,7 +132,7 @@ def create_account_form():
     password_input = st.text_input('Password', type='password', key='new_password')
     gender = st.selectbox('What is you gender?', ('Male', 'Female', 'Other'), key='new_gender')
     age = st.selectbox('What is you age', ('0-9', '10-17', '18-29', '30-49', '50-64', '65+', 'Prefer not to say'), index=2,  key='new_age')
-    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_proccessed.csv').Genre.unique(), key='content_types')
+    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_episodes.csv').Genre.unique(), key='content_types')
     submit_button = st.form_submit_button("Create account", on_click=create_account)
 
 def create_account():
@@ -195,7 +201,7 @@ def profile():
     password_input = st.text_input('Password', type='password', key='new_password', value=st.session_state['user']['password'])
     gender = st.selectbox('What is you gender?', genders, key='new_gender', index=genders.index(st.session_state['user']['gender']))
     age = st.selectbox('What is you age', agegroups, key='new_age', index=agegroups.index(st.session_state['user']['age']))
-    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_proccessed.csv').Genre.unique(), key='content_types', default=st.session_state['user']['content_types'])
+    options = st.multiselect('What kind of content do you like?', pd.read_csv('../data/BBC_episodes.csv').Genre.unique(), key='content_types', default=st.session_state['user']['content_types'])
     submit_button = st.form_submit_button("Change account", on_click=update_account)
 
   # download and delete personal data

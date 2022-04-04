@@ -14,7 +14,7 @@ def main_recommendations(df):
         st.subheader(f"Because you're interested in {genre.capitalize()}")
         t.recommendations(df[df['Genre'] == genre].sample(8), type='Genre', linked_to=genre)
 
-    st.subheader(f"Some of the top news shows")
+    st.subheader(f"Some of the best news shows")
     t.recommendations(df[df['Genre'] == 'news'].sample(8), type='Top news')
 
 def content_recommendations(df, current_content):
@@ -40,7 +40,6 @@ def content_recommendations(df, current_content):
                 else:
                     dataframes = t.split_dataframe(df_show, chunk_size=8)
                     for dataframe in dataframes:
-                        print(dataframe)
                         t.recommendations(dataframe, type='Select episode', linked_to=current_content['Content_ID'], button='Episode_name', len_rec=8)
             else:
                 st.subheader('There are no other episodes in this season.')

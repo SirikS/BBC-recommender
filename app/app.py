@@ -61,7 +61,7 @@ with col2:
   st.title('')
   st.checkbox('Incognito session', key='incognito')
 with col3:
-  searchbar = st.text_input('Search for an item', placeholder='For example: Dance Passion', key='search', on_change=t.set_search)
+  searchbar = st.text_input('Search for an item', placeholder='For example: Dance', key='search', on_change=t.set_search)
 with col4:
   st.title('')
   st.button('View profile', on_click=t.open_profile)
@@ -81,7 +81,6 @@ if 'index' not in st.session_state:
   st.stop()
 
 ## content page
-print(st.session_state['index'])
 df_current_content = df_episode[df_episode['Content_ID'] ==  st.session_state['index']].iloc[0]
 
 # display content
@@ -105,7 +104,6 @@ with col2:
       current_rating = df_ratings[(df_ratings['user_id'] == st.session_state['user']['id']) & (df_ratings['content_id'] == st.session_state['index'])].iloc[0]['rating']
     except:
       current_rating = 0
-    print(type(current_rating))
     slider_rating = st.slider('Rate this content', min_value=0, max_value=5, value=int(current_rating), step=1, key='content_rating')
     submit_button = st.form_submit_button("Submit rating", on_click=t.rating_callback, args=(st.session_state['index'], ))
 

@@ -62,7 +62,7 @@ def logout():
   # make sure these are back to false
   st.session_state['open profile'] = False
   st.session_state['account create'] = False
-  st.session_state['search'] = False
+  st.session_state['load search'] = False
   
   # store activity
   activity(activity='logout')

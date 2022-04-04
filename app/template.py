@@ -25,23 +25,24 @@ def activity(activity, id=None, attribute_link=None, attribute_value=None, user_
 def tile_item(column, item, type, linked_to, button):
   with column:
     st.image(item['Image'], use_column_width='always')
+
+    # use correct text on button
     if button == 'both':
       st.button(item['Title'] + ' - ' + item['Season+Episode'], key=random(), on_click=select_content, args=(item['Content_ID'], type, linked_to))
+    elif pd.isna(item[button]):
+      st.button(item['Season+Episode'], key=random(), on_click=select_content, args=(item['Content_ID'], type, linked_to))
     else:
       st.button(item[button], key=random(), on_click=select_content, args=(item['Content_ID'], type, linked_to))
 
 
-def recommendations(df, type='unknown', linked_to=None, button='Title'):
+def recommendations(df, type='unknown', linked_to=None, button='Title', len_rec=8):
 
   # check the number of items
   nbr_items = df.shape[0]
 
   if nbr_items != 0:    
-
-    
     # create columns with the corresponding number of items
-    # columns = st.columns(nbr_items)
-    columns = st.columns(8)
+    columns = st.columns(len_rec)
 
     # convert df rows to dict lists
     items = df.to_dict(orient='records')
@@ -69,7 +70,7 @@ def logout():
   # logout
   del st.session_state['user']
 
-def select_content(show_id, type, linked_to):  
+def select_content(show_id, type='unknown', linked_to=None):  
   # unload content if loaded
   unload_content()
 
@@ -85,7 +86,7 @@ def unload_content():
 
 def rating_callback(id):
   # store the rating
-  activity(activity='content_rating', id=id, attribute_value=st.session_state.content_rating)
+  activity(activity='content rating', id=id, attribute_value=st.session_state.content_rating)
 
 def check_login():
   df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
@@ -253,3 +254,10 @@ def delete_account():
   users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
   users = users[users['id'] != user_id]
   users.to_csv('../data/users.csv', index=False)
+
+def split_dataframe(df, chunk_size = 10000): 
+    chunks = list()
+    num_chunks = len(df) // chunk_size + 1
+    for i in range(num_chunks):
+        chunks.append(df[i*chunk_size:(i+1)*chunk_size])
+    return chunks

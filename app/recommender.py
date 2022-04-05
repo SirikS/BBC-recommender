@@ -34,7 +34,7 @@ def content_recommendations(df, current_content):
             # select episode in a season if possible
             df_show = df[(df['Show_ID'] == current_content['Show_ID']) & (df['Season_no'] == current_content['Season_no'])].sort_values('Episode_ID')
             if len(df_show) > 1:
-                st.subheader('Episodes in season ' + str(current_content['Season_no']))
+                st.subheader('Episodes in season: ' + str(current_content['Season_no']))
                 if len(df_show) <= 8:
                     t.recommendations(df_show, type='Select episode', linked_to=current_content['Content_ID'], button='Episode_name')
                 else:

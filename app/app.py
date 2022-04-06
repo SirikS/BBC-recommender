@@ -13,7 +13,6 @@ import recommender as r
 st.set_page_config(layout='wide')
 df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})
 
-
 ### setup some session state values
 if 'incognito' not in st.session_state:
   st.session_state['incognito'] = False

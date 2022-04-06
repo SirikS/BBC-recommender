@@ -6,16 +6,44 @@ from itertools import cycle
 from random import random
 
 def main_recommendations(df):
+    df_shows = df[df['Episode_ID'] == 1]
 
-    df = df[df['Episode_ID'] == 1]
+    # continue watching
+    next_episode = pd.read_csv('../recommendations/next_episode.csv')
+    next_episode = next_episode[next_episode['user_id'] == st.session_state['user']['id']]
+    if len(next_episode) > 0:
+        st.subheader('Continue watching')
+        t.recommendations(next_episode.merge(df, on='Content_ID').head(8), type='continue watching')
+
+    # top shows for the user's age
+    if st.session_state['user']['age'] != 'Prefer not to say':
+        best_age = pd.read_csv('../recommendations/age_best_reviewd.csv')
+        best_age = best_age[best_age['age'] == st.session_state['user']['age']]
+        st.subheader(f"Popular show for users of age {st.session_state['user']['age']}")
+        t.recommendations(best_age.merge(df_shows, on='Show_ID').head(8), type='top shows')
+
+    # top shows by gender
+    if st.session_state['user']['gender'] in ['Male', 'Female']:
+        best_gender = pd.read_csv('../recommendations/gender_best_reviewd.csv')
+        best_gender = best_gender[best_gender['gender'] == st.session_state['user']['gender']]
+        if st.session_state['user']['gender'] == 'Male':
+            st.subheader('Popular shows amongst Men')
+        if st.session_state['user']['gender'] == 'Female':
+            st.subheader('Popular shows amongst Women')
+        t.recommendations(best_gender.merge(df_shows, on='Show_ID').head(8), type='top shows')
 
     # user interests
     for genre in st.session_state['user']['content_types']:
         st.subheader(f"Because you're interested in {genre.capitalize()}")
-        t.recommendations(df[df['Genre'] == genre].sample(8), type='Genre', linked_to=genre)
+        t.recommendations(df_shows[df_shows['Genre'] == genre].sample(8), type='Genre', linked_to=genre)
+    
+    # top shows overall
+    best = pd.read_csv('../recommendations/total_best_reviewd.csv')
+    st.subheader('Best reviewed shows')
+    t.recommendations(best.merge(df_shows, on='Show_ID').head(8), type='top shows')
 
     st.subheader(f"Some of the best news shows")
-    t.recommendations(df[df['Genre'] == 'news'].sample(8), type='Top news')
+    t.recommendations(df_shows[df_shows['Genre'] == 'news'].sample(8), type='Top news')
 
 def content_recommendations(df, current_content):
     # recommend all content from current show
@@ -25,7 +53,7 @@ def content_recommendations(df, current_content):
         with st.expander("Select an episode from this show"):
 
             # are there more seasons and allow to select
-            df_seasons = df_show.sort_values('Episode_ID').groupby('Season_no').head(1) #.sort_values('Season_no')
+            df_seasons = df_show.sort_values('Episode_ID').groupby('Season_no').head(1)
             if len(df_seasons) > 1:
                 cols = cycle(st.columns(len(df_seasons)))
                 for index, season in df_seasons.iterrows():

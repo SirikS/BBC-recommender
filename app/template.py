@@ -4,6 +4,7 @@ import datetime
 import csv
 import pandas as pd
 from ast import literal_eval
+import interaction_calculations as calc
 
 def activity(activity, id=None, attribute_link=None, attribute_value=None, user_id=None):
   if st.session_state.incognito and id != None:
@@ -87,6 +88,7 @@ def unload_content():
 def rating_callback(id):
   # store the rating
   activity(activity='content rating', id=id, attribute_value=st.session_state.content_rating)
+  calc.do_calculations()
 
 def check_login():
   df_users = pd.read_csv('../data/users.csv', converters={"content_types": literal_eval}, dtype={'id': int})

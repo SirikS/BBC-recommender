@@ -5,6 +5,7 @@ import csv
 import pandas as pd
 from ast import literal_eval
 import interaction_calculations as calc
+from sklearn.neighbors import NearestNeighbors
 
 def activity(activity, id=None, attribute_link=None, attribute_value=None, user_id=None):
   if st.session_state.incognito and id != None:
@@ -263,3 +264,93 @@ def split_dataframe(df, chunk_size = 10000):
     for i in range(num_chunks):
         chunks.append(df[i*chunk_size:(i+1)*chunk_size])
     return chunks
+
+
+
+
+
+
+def rating_prediction(ID):
+    #read in activities and content dataframe
+    df_act = pd.read_csv('../data/activities.csv')
+    df_content = pd.read_csv('../data/BBC_episodes.csv')
+    #set user_id equal to current user
+    user_id = ID
+
+
+
+    #Adds the show ID to the activities dataframe
+    df_act = df_act.merge(df_content, left_on='content_id', right_on='Content_ID', how='left')[['Show_ID', 'content_id', 'activity', 'attribute_value', 'user_id', 'datetime']]
+
+    ############################################################################################
+    #TEMPORARY: based on ratings only
+
+    #Filter out content rating
+    df_ratings = df_act[df_act['activity'] == 'content rating']
+    df_ratings['attribute_value'] = pd.to_numeric(df_ratings['attribute_value'])
+    df_ratings = df_ratings.replace(to_replace=0,
+                                    value=1)
+    df_ratings = df_ratings.groupby(['Show_ID', 'user_id'], as_index=False).mean()
+
+    if len(df_ratings[df_act['user_id']==user_id]) == 0:
+      return(pd.DataFrame)
+
+
+    df = df_ratings.pivot(index='user_id', columns='Show_ID', values='attribute_value').fillna(0)
+
+    #TEMP: based on ratings only
+    ############################################################################################
+
+
+
+    #pick nearest neighbours
+    knn = NearestNeighbors(metric='cosine', algorithm='brute')
+    knn.fit(df.values)
+    distances, indices = knn.kneighbors(df.values, n_neighbors=3)
+
+    neighbours = {}
+    for i in range(0, len(indices)):
+        nn = indices[i]
+        dist = distances[i]
+        e = nn[0]
+        e_isbn = df.index[e]
+        neighbours[e_isbn] = {"nn": [df.index[n] for n in nn[1:]], "dist": [1 - x for x in dist[1:]]}
+
+    #Make a list of only the shows that exist in the dataset
+
+    # Make a list of only the shows that exist in the dataset
+    showlist = df.columns.tolist()
+
+    neighbours = neighbours[user_id]
+
+    nn = neighbours['nn']
+    dist = neighbours['dist']
+
+    ratinglist = []
+
+    for show in showlist:
+      numerator = 0
+      denominator = 0
+
+      for i in range(0, len(nn)):
+        isbn = nn[i]
+        user_rating = df.loc[user_id, show]
+
+        numerator += user_rating * dist[i]
+        denominator += dist[i]
+
+      if denominator > 0:
+
+        ratinglist.append(numerator / denominator)
+
+      else:
+
+        ratinglist.append(0)
+
+    #make df of recommedations, return top 8
+
+    df_recoms = pd.DataFrame(list(zip(showlist, ratinglist)),
+                             columns=['Show_ID', 'Predicted_ratings'])
+    df_recoms = df_recoms.sort_values(by='Predicted_ratings', ascending=False)
+
+    return(df_recoms)

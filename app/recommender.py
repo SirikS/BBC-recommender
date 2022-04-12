@@ -4,6 +4,7 @@ import template as t
 import streamlit as st
 from itertools import cycle
 from random import random
+import string
 
 def main_recommendations(df):
     df_shows = df[df['Episode_ID'] == 1]
@@ -14,6 +15,12 @@ def main_recommendations(df):
     if len(next_episode) > 0:
         st.subheader('Continue watching')
         t.recommendations(next_episode.merge(df, on='Content_ID').head(8), type='continue watching')
+
+
+    pred = t.rating_prediction(st.session_state['user']['id'])
+    if not pred.empty:
+      st.subheader('Recommended for you')
+      t.recommendations(pred.merge(df_shows, on='Show_ID').head(8), type='personal recom')
 
     # top shows for the user's age
     if st.session_state['user']['age'] != 'Prefer not to say':
@@ -86,18 +93,39 @@ def content_recommendations(df, current_content):
 
 def load_search(df):
     # usually when searching people will use lowercase, but to be sure I converted all strings to lowercase
-    query = st.session_state['search query']
+    query = st.session_state['search query'].lower()
+    query_exact = ' ' +query + ' '
 
-    ## search for matches here, convert title and description to lowercase to void weird upper/lowercase dependent
+    ## search for matches here, convert title and description to lowercase to avoid weird upper/lowercase dependent
     ##search results
+    #make lower case, remove punctuation, add a space for the end to help with exact search
     df['title_low'] = df['Title'].str.lower() + ' '
-    df_title_search = df[df['title_low'].str.contains(query.lower())]
-    df_title_search = df_title_search[df_title_search['Episode_ID'] == 1]
-    df_title_search = df_title_search.sample(min(len(df_title_search), 8))
+    df['title_low'] = ' ' + df['title_low'].str.translate(str.maketrans('', '', string.punctuation)) + ' '
 
     df['description_low'] = df['Description'].str.lower()
-    df_description_search = df[df['description_low'].str.contains(query.lower())]
-    df_description_search = df_description_search.sample(min(len(df_description_search),8))
+    df['description_low'] = ' ' + df['description_low'].str.translate(str.maketrans('', '', string.punctuation)) + ' '
+
+    #First search for exact word matches (aka ones followed by a space), then non exact matches (partial words)
+    df_title_search = df[df['title_low'].str.contains(query_exact)]
+    df_title_search = df_title_search[df_title_search['Episode_ID'] == 1]
+    if len(df_title_search) < 8:
+        df_title_search_part = df[df['title_low'].str.contains(query)]
+        df_title_search_part = df_title_search_part[df_title_search_part['Episode_ID'] == 1]
+        df_title_search_part = df_title_search_part.sample(min(len(df_title_search_part), (8 - len(df_title_search))))
+        df_title_search = df_title_search.append(df_title_search_part)
+        df_title_search = df_title_search.drop_duplicates(subset=['Show_ID'])
+
+
+
+    df_description_search = df[df['description_low'].str.contains(query_exact)]
+    if len(df_description_search) < 8:
+        df_description_search_part = df[df['description_low'].str.contains(query)]
+        df_description_search_part = df_description_search_part.sample(min(len(df_description_search_part), (8 - len(df_description_search))))
+        df_description_search = df_description_search.append(df_description_search_part)
+        df_description_search = df_description_search.drop_duplicates(subset=['Episode_ID'])
+
+
+
 
     ##show the search results
     st.header('Because you searched for \'' + query + '\'')

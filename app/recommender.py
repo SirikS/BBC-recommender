@@ -17,7 +17,9 @@ def main_recommendations(df):
         t.recommendations(next_episode.merge(df, on='Content_ID').head(8), type='continue watching')
 
 
+    # personal recommendations
     pred = t.rating_prediction(st.session_state['user']['id'])
+
     if not pred.empty:
       st.subheader('Recommended for you')
       t.recommendations(pred.merge(df_shows, on='Show_ID').head(8), type='personal recom')

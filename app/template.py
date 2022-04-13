@@ -277,10 +277,9 @@ def rating_prediction(ID):
     #set user_id equal to current user
     user_id = ID
 
-
-
     #Adds the show ID to the activities dataframe
     df_act = df_act.merge(df_content, left_on='content_id', right_on='Content_ID', how='left')[['Show_ID', 'content_id', 'activity', 'attribute_value', 'user_id', 'datetime']]
+
 
     ############################################################################################
     #TEMPORARY: based on ratings only
@@ -292,7 +291,7 @@ def rating_prediction(ID):
                                     value=1)
     df_ratings = df_ratings.groupby(['Show_ID', 'user_id'], as_index=False).mean()
 
-    if len(df_ratings[df_act['user_id']==user_id]) == 0:
+    if len(df_ratings[df_ratings['user_id']==user_id]) == 0:
       return(pd.DataFrame)
 
 
@@ -303,7 +302,7 @@ def rating_prediction(ID):
 
 
 
-    #pick nearest neighbours
+    #pick the nearest neighbours per point
     knn = NearestNeighbors(metric='cosine', algorithm='brute')
     knn.fit(df.values)
     distances, indices = knn.kneighbors(df.values, n_neighbors=3)
@@ -316,16 +315,16 @@ def rating_prediction(ID):
         e_isbn = df.index[e]
         neighbours[e_isbn] = {"nn": [df.index[n] for n in nn[1:]], "dist": [1 - x for x in dist[1:]]}
 
-    #Make a list of only the shows that exist in the dataset
 
     # Make a list of only the shows that exist in the dataset
     showlist = df.columns.tolist()
 
-    neighbours = neighbours[user_id]
+    #pick nearest neighbours for the specific user
+    neigh = neighbours[user_id]
+    nn = neigh['nn']
+    dist = neigh['dist']
 
-    nn = neighbours['nn']
-    dist = neighbours['dist']
-
+    ##calculate the predicted rating for all shows in the dataset (e.g. only shows that are arleady rated)
     ratinglist = []
 
     for show in showlist:
@@ -333,7 +332,6 @@ def rating_prediction(ID):
       denominator = 0
 
       for i in range(0, len(nn)):
-        isbn = nn[i]
         user_rating = df.loc[user_id, show]
 
         numerator += user_rating * dist[i]

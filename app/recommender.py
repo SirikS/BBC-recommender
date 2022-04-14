@@ -20,9 +20,10 @@ def main_recommendations(df):
     # personal recommendations
     pred = t.rating_prediction(st.session_state['user']['id'])
 
-    if not pred.empty:
-      st.subheader('Recommended for you')
-      t.recommendations(pred.merge(df_shows, on='Show_ID').head(8), type='personal recom')
+    #don't show if empty or if user is in incognito mode
+    if not st.session_state.incognito and not pred.empty:
+          st.subheader('Recommended for you')
+          t.recommendations(pred.merge(df_shows, on='Show_ID').head(8), type='personal recom')
 
     # top shows for the user's age
     if st.session_state['user']['age'] != 'Prefer not to say':

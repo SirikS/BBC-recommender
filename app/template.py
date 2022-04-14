@@ -166,6 +166,7 @@ def create_account():
     activity(activity='create account', user_id=new_id)
     st.session_state['account create'] = False
     login(new_user.loc[0])
+    calc.do_calculations()
 
 def set_search():
   # make sure query is not empty
@@ -258,6 +259,16 @@ def delete_account():
   users = users[users['id'] != user_id]
   users.to_csv('../data/users.csv', index=False)
 
+  #delete user data
+  user_data = pd.read_csv('../data/activities.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+  user_data = user_data[user_data['user_id'] != user_id]
+  user_data.to_csv('../data/activities.csv', index=False)
+
+  #delete continue watching
+  user_watch = pd.read_csv('../recommendations/next_episode.csv', converters={"content_types": literal_eval}, dtype={'id': int})
+  user_watch = user_watch[user_watch['user_id'] != user_id]
+  user_watch.to_csv('../recommendations/next_episode.csv', index=False)
+
 def split_dataframe(df, chunk_size = 10000): 
     chunks = list()
     num_chunks = len(df) // chunk_size + 1
@@ -332,7 +343,8 @@ def rating_prediction(ID):
       denominator = 0
 
       for i in range(0, len(nn)):
-        user_rating = df.loc[user_id, show]
+        user = nn[i]
+        user_rating = df.loc[user, show]
 
         numerator += user_rating * dist[i]
         denominator += dist[i]
@@ -350,5 +362,6 @@ def rating_prediction(ID):
     df_recoms = pd.DataFrame(list(zip(showlist, ratinglist)),
                              columns=['Show_ID', 'Predicted_ratings'])
     df_recoms = df_recoms.sort_values(by='Predicted_ratings', ascending=False)
+    df_recoms = df_recoms[df_recoms['Predicted_ratings'] > 4]
 
     return(df_recoms)

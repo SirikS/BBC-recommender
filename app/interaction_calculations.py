@@ -1,14 +1,27 @@
+# script to calculate user interactions
+# - watchtime
+# - latest rating
+
+# and to precalculate recommendations
+# - top viewed
+# - top reviewed
+# - top reviewed age
+# - top reviewed gender
+# - continue watching
+
 import pandas as pd
 import streamlit as st
 from ast import literal_eval
 
 def do_calculations():
+    """Run all used precalculations"""
     # run activity calculations
-    # watchtime() -> not used atm
+    watchtime()
     rating_dataset()
 
     # create recommendations
-    total_best_reviewed()
+    # total_best_reviewed()
+    top_viewed()
     age_best_reviewed()
     gender_best_reviewed()
     continue_watching()
@@ -16,6 +29,7 @@ def do_calculations():
 
 # create watchtime dataset
 def watchtime():
+    """Calculate the watchtime a user spent on a content item based on opening and closing content"""
     # load relevant activities
     df = pd.read_csv('../data/activities.csv', sep=',')
     df = df[df['activity'].isin(['select content', 'unload content'])].sort_values(by=['user_id', 'datetime'])
@@ -44,6 +58,7 @@ def watchtime():
 
 # create ratings dataset
 def rating_dataset():
+    """Collect most recent rating and store in the ratings dataset"""
     # load ratings
     activities = pd.read_csv('../data/activities.csv')
     ratings = activities[activities['activity'] == 'content rating']
@@ -57,11 +72,37 @@ def rating_dataset():
     ratings.to_csv('../data/ratings.csv', index=False)
 
 def weighted_rating(x, m, C):
+    """Function for weighted recommendations"""
     v = x['count']
     R = x['mean']
     return (v/(v+m) * R) + (m/(m+v) * C)
 
+def top_viewed():
+    """Precalculate recommendations based on most watchtime"""
+    watchtime = pd.read_csv('../data/total_watch_time.csv')
+    content = pd.read_csv('../data/BBC_episodes.csv')
+    users = pd.read_csv('../data/users.csv',converters={"content_types": literal_eval}, dtype={'id': int})
+
+    temp = watchtime.merge(content, left_on='content_id', right_on='Content_ID')[['user_id', 'Content_ID', 'Show_ID', 'Episode_ID', 'watch_time']]
+    df = temp.merge(users, left_on='user_id', right_on='id')[['user_id', 'Content_ID', 'Show_ID', 'Episode_ID', 'watch_time', 'age', 'gender']]
+    del temp
+
+    df = df.groupby(['Show_ID'])['watch_time'].agg(['mean', 'count']).reset_index()
+
+    # C is the mean vote across the whole report
+    C = df['mean'].mean()
+
+    # m is the minimum votes required to be listed in the chart;
+    m = df['count'].quantile(0.99)
+
+    df['weight'] = df.apply(weighted_rating, args= (C, m, ), axis=1)
+
+    df_total = df.sort_values('weight', ascending=False).head(16)[['Show_ID', 'weight']]
+
+    df_total.to_csv('../recommendations/top_viewed.csv', index=False)
+
 def total_best_reviewed():
+    """Precalculate recommendations based on best weighted reviews"""
     ratings = pd.read_csv('../data/ratings.csv')
     content = pd.read_csv('../data/BBC_episodes.csv')
     users = pd.read_csv('../data/users.csv',converters={"content_types": literal_eval}, dtype={'id': int})
@@ -84,6 +125,7 @@ def total_best_reviewed():
     df_total.to_csv('../recommendations/total_best_reviewd.csv', index=False)
 
 def age_best_reviewed():
+    """Precalculate weighted recommendations for all age groups"""
     ratings = pd.read_csv('../data/ratings.csv')
     content = pd.read_csv('../data/BBC_episodes.csv')
     users = pd.read_csv('../data/users.csv',converters={"content_types": literal_eval}, dtype={'id': int})
@@ -106,6 +148,7 @@ def age_best_reviewed():
     df_age.to_csv('../recommendations/age_best_reviewd.csv', index=False)
 
 def gender_best_reviewed():
+    """Precalculate weighted recommendations for every gender"""
     ratings = pd.read_csv('../data/ratings.csv')
     content = pd.read_csv('../data/BBC_episodes.csv')
     users = pd.read_csv('../data/users.csv',converters={"content_types": literal_eval}, dtype={'id': int})
@@ -129,6 +172,7 @@ def gender_best_reviewed():
     df_gender.to_csv('../recommendations/gender_best_reviewd.csv', index=False)
 
 def continue_watching():
+    """Precalculate recommendations to continue watching. Last reviewed episode is the last viewed episode."""
     ratings = pd.read_csv('../data/ratings.csv')
     content = pd.read_csv('../data/BBC_episodes.csv')
 

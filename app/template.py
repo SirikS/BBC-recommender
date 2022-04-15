@@ -1,8 +1,19 @@
+# Script that consists of all helper functions of the application
+# - activity logging
+# - make recommendations
+# - login
+# - logout
+# - account creation 
+# - account changes (update profile/dowload data/remove data/etc.)
+# - searching
+# - personal recommendation algorithm
+
 import streamlit as st
 from random import random
 import datetime
 import csv
 import pandas as pd
+pd.options.mode.chained_assignment = None
 from ast import literal_eval
 import interaction_calculations as calc
 from sklearn.neighbors import NearestNeighbors
@@ -16,7 +27,7 @@ def activity(activity, id=None, attribute_link=None, attribute_value=None, user_
   data = {'content_id': id, 'activity': activity, 'attribute_link':attribute_link, 'attribute_value': attribute_value, 
   'user_id': user_id, 'datetime': str(datetime.datetime.now())}
   
-  # only turn of if csv file has to be made
+  # only turn of if csv file has to be newly made
   # with open('../data/activities.csv', 'w') as f:
   #   csv.writer(f).writerow(data.keys())
 
@@ -297,7 +308,7 @@ def rating_prediction(ID):
 
     #Filter out content rating
     df_ratings = df_act[df_act['activity'] == 'content rating']
-    df_ratings['attribute_value'] = pd.to_numeric(df_ratings['attribute_value'])
+    df_ratings['attribute_value'] = df_ratings['attribute_value'].astype(int)
     df_ratings = df_ratings.replace(to_replace=0,
                                     value=1)
     df_ratings = df_ratings.groupby(['Show_ID', 'user_id'], as_index=False).mean()
